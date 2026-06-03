@@ -1,98 +1,95 @@
 <!-- ATTENZIONE PAGINA PRIVATA - PROPRIETA' DI SFRISO PAOLO -->
 
-function calcolaStato() {
-    const oraSistema = new Date();
-    console.log("Ora di Sistema: " + oraSistema);
-    const giorno = oraSistema.getDay(); // 0 = Domenica, 1 = Lunedì, ..., 6 = Sabato
-    const hh = oraSistema.getHours();
-    const mm = oraSistema.getMinutes();
+<!DOCTYPE html>
+<html lang="it">
 
-    const adesso = (hh * 60) + mm;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orari di Apertura</title>
 
-    const apriMattina = (7 * 60) + 30;     // 07:30
-    const chiudiMattina = (12 * 60) + 50;  // 12:50
-    const apriPome = 16 * 60;              // 16:00
-    const chiudiPome = (19 * 60) + 30;     // 19:30
+    <link rel="stylesheet" href="Style_Orario.css">
 
-    const banner = document.getElementById('statusBanner');
-    const testoStato = document.getElementById('statusText');
-    const testoContoRovescio = document.getElementById('countdownText');
+</head>
 
-    // Reset delle classi del banner
-    banner.className = 'status-banner';
-    
-    // Rimuove l'evidenziazione da tutti i giorni
-    document.querySelectorAll('.day-block').forEach(riga => riga.classList.remove('today-highlight'));
+<body>
 
-    // Evidenzia il giorno corrente nella tabella
-    const rigaOggi = document.getElementById(`day-${giorno}`);
-    if (rigaOggi) rigaOggi.classList.add('today-highlight');
+    <div class="orari-card">
+        <div id="statusBanner" class="status-banner">
+            <div id="statusText" class="status-text">Controllo orario...</div>
+            <div id="countdownText" class="countdown-text">Attendere prego...</div>
+        </div>
 
-    // --- LOGICA DI CALCOLO ORARI CORRETTA ---
-    
-    // 1. DOMENICA
-    if (giorno === 0) {
-        impostaNegozioChiuso(banner, testoStato, testoContoRovescio, "Ci vediamo domani alle 07:30");
-    }
-    // 2. SABATO
-    else if (giorno === 6) {
-        if (adesso < apriMattina) {
-            const attesa = apriMattina - adesso;
-            impostaNegozioChiuso(banner, testoStato, testoContoRovescio, `Oggi apriamo tra ${formattaTempo(attesa)} (ore 07:30)`);
-        } 
-        else if (adesso >= apriMattina && adesso < chiudiMattina) {
-            impostaNegozioAperto(banner, testoStato, testoContoRovescio, chiudiMattina - adesso);
-        } 
-        else {
-            impostaNegozioChiuso(banner, testoStato, testoContoRovescio, "Pomeriggio chiuso. Ci vediamo Lunedì alle 07:30");
-        }
-    }
-    // 3. GIORNI INFRASETTIMANALI (Lunedì - Venerdì)
-    else {
-        // Mattina presto (Prima delle 07:30) - IL CONTROLLO CHE MANCAVA PRIMA!
-        if (adesso < apriMattina) {
-            const attesa = apriMattina - adesso;
-            impostaNegozioChiuso(banner, testoStato, testoContoRovescio, `Apriamo stamattina tra ${formattaTempo(attesa)}`);
-        }
-        // Mattina aperto (07:30 - 12:50)
-        else if (adesso >= apriMattina && adesso < chiudiMattina) {
-            impostaNegozioAperto(banner, testoStato, testoContoRovescio, chiudiMattina - adesso);
-        }
-        // Pausa pranzo (12:50 - 16:00)
-        else if (adesso >= chiudiMattina && adesso < apriPome) {
-            const attesa = apriPome - adesso;
-            impostaNegozioChiuso(banner, testoStato, testoContoRovescio, `Al pomeriggio apriamo tra ${formattaTempo(attesa)}`);
-        }
-        // Pomeriggio aperto (16:00 - 19:30)
-        else if (adesso >= apriPome && adesso < chiudiPome) {
-            impostaNegozioAperto(banner, testoStato, testoContoRovescio, chiudiPome - adesso);
-        }
-        // Sera/Notte (Dopo le 19:30)
-        else {
-            impostaNegozioChiuso(banner, testoStato, testoContoRovescio, "Adesso siamo chiusi. A domani mattina alle 07:30!");
-        }
-    }
-}
+        <div class="timetable">
 
-function impostaNegozioAperto(banner, titolo, sottoTitolo, minutiMancanti) {
-    banner.classList.add('aperto');
-    titolo.textContent = "● APERTO ORA";
-    sottoTitolo.textContent = `Chiudiamo tra ${formattaTempo(minutiMancanti)}`;
-}
+            <div class="day-block" id="day-1">
+                <span class="day-name">Lunedì</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="hours-block">Pome: 16:00 - 19:30</span>
+                </div>
+            </div>
 
-function impostaNegozioChiuso(banner, titolo, sottoTitolo, testo) {
-    banner.classList.add('chiuso');
-    titolo.textContent = "○ CHIUSO ORA";
-    sottoTitolo.textContent = testo;
-}
+            <div class="day-block" id="day-2">
+                <span class="day-name">Martedì</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="hours-block">Pome: 16:00 - 19:30</span>
+                </div>
+            </div>
 
-function formattaTempo(minutiTotali) {
-    const ore = Math.floor(minutiTotali / 60);
-    const minuti = minutiTotali % 60;
-    if (ore === 0) return `${minuti} min`;
-    return `${ore} ore e ${minuti} min`;
-}
+            <div class="day-block" id="day-3">
+                <span class="day-name">Mercoledì</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="hours-block">Pome: 16:00 - 19:30</span>
+                </div>
+            </div>
 
-// Avvio immediato e controllo ogni 15 secondi
-calcolaStato();
-setInterval(calcolaStato, 15000);
+            <div class="day-block" id="day-4">
+                <span class="day-name">Giovedì</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="hours-block">Pome: 16:00 - 19:30</span>
+                </div>
+            </div>
+
+            <div class="day-block" id="day-5">
+                <span class="day-name">Venerdì</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="hours-block">Pome: 16:00 - 19:30</span>
+                </div>
+            </div>
+
+            <div class="day-block" id="day-6">
+                <span class="day-name">Sabato</span>
+                <div class="hours-container">
+                    <span class="hours-block">Mattina: 07:30 - 12:50</span>
+                    <span class="closed-text">Pomeriggio Chiuso</span>
+                </div>
+            </div>
+
+            <div class="day-block" id="day-0" style="color: #e63946;">
+                <span class="day-name" style="color: #e63946;">Domenica &nbsp;&nbsp;<i>CHIUSO TUTTO IL GIORNO</i></span>
+                <!-- Modificato qui sotto per garantire una centratura perfetta e pulita -->
+                <div style="text-align: center; width: 100%; padding-top: 5px;">
+                    <span class="closed-text" style="color: #2e1719; font-weight: bold; font-size: 13px; display: inline-block;">
+                        Aperture e Chiusure Straordinarie non sono<br>nell'elenco ( l'orario può subire variazioni )
+                    </span>
+                </div>
+            </div>
+
+        </div>
+        <center>
+            <button onclick="window.location.href='homePage.html'">clicca per entrare</button>
+            <br><br>
+        </center>
+
+
+    </div>
+
+    <script src="Js_Orario.js"></script>
+</body>
+
+</html>
